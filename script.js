@@ -221,6 +221,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('트랙 너비:', trackWidth);
         console.log('결승선 위치:', finishLinePosition);
 
+        // 디바이스 타입 확인 (모바일/데스크톱)
+        const isMobile = window.innerWidth <= 768;
+        
         // 고양이 생성
         const catCount = parseInt(catCountInput.value);
         const trackHeight = raceTrack.clientHeight;
@@ -230,12 +233,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const nameInput = document.getElementById(`cat-name-${i}`);
             const name = nameInput ? nameInput.value : `냥이${i}`;
             
+            // 초기 속도: 모바일에서는 더 느리게 설정
+            const baseSpeed = isMobile ? 0.5 : 1;
+            const randomSpeed = baseSpeed + Math.random() * (isMobile ? 0.3 : 0.5);
+            
             // 고양이 객체 생성
             const cat = {
                 id: i,
                 name: name,
                 position: 0,
-                speed: 1 + Math.random() * 0.5, // 초기 속도 (약간의 랜덤성)
+                speed: randomSpeed, // 모바일에서는 더 느린 속도로 시작
                 energy: 100, // 체력
                 isExhausted: false, // 체력 소진 상태
                 isCatMadness: false, // 광묘병 상태
@@ -396,8 +403,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // 체력 감소 - 더 빠르게 (0.4 → 0.8)
-        cat.energy -= 0.8;
+        // 디바이스 타입 확인 (모바일/데스크톱)
+        const isMobile = window.innerWidth <= 768;
+        
+        // 체력 감소 - 모바일에서는 더 천천히 감소
+        const energyDecreaseRate = isMobile ? 0.5 : 0.8;
+        cat.energy -= energyDecreaseRate;
         cat.energyBar.style.width = `${cat.energy}%`;
         
         // 체력 소진 시
@@ -448,6 +459,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 이동 속도 계산 (무지개 부스트 적용)
         let moveSpeed = cat.speed;
+        
+        // 디바이스에 따른 속도 조정
+        if (isMobile) {
+            // 모바일에서는 트랙 크기에 비례하게 속도 줄임
+            const speedScale = Math.min(1, trackWidth / 1000);
+            moveSpeed *= speedScale;
+        }
+        
         if (cat.isRainbowBoost) {
             moveSpeed *= 2;
         }
@@ -498,9 +517,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function startEventTimers() {
         // 동적 이벤트 간격 (고양이가 완주할수록 짧아짐)
         function getEventInterval() {
-            // 완주한 고양이 수에 따라 간격 감소 (최소 1초, 최대 5초)
-            const baseInterval = Math.max(1000, 5000 - (finishedCats.length * 500));
-            return baseInterval + Math.random() * 2000;
+            // 디바이스 타입 확인 (모바일/데스크톱)
+            const isMobile = window.innerWidth <= 768;
+            
+            // 모바일에서는 기본 간격을 더 길게 설정
+            const mobileScale = isMobile ? 1.5 : 1;
+            
+            // 완주한 고양이 수에 따라 간격 감소 (최소 1초, 최대 5초 또는 모바일의 경우 7.5초)
+            const maxInterval = 5000 * mobileScale;
+            const minInterval = isMobile ? 1500 : 1000;
+            const decreaseFactor = isMobile ? 300 : 500;
+            
+            const baseInterval = Math.max(minInterval, maxInterval - (finishedCats.length * decreaseFactor));
+            return baseInterval + Math.random() * (2000 * mobileScale);
         }
         
         // 이벤트 타이머 재설정 함수
@@ -555,7 +584,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateCatStatus(selectedCat);
                 addLog(getRandomCommentary('catMadness', {name: selectedCat.name}));
                 
-                // 광묘병 상태는 2초 동안만 지속됨 (체력 소진 전에 일정 시간 후 자동 회복)
+                // 디바이스 타입 확인 (모바일/데스크톱)
+                const isMobile = window.innerWidth <= 768;
+                const effectDuration = isMobile ? 3000 : 2000; // 모바일에서는 3초
+                
+                // 광묘병 상태는 모바일에서는 3초, 데스크톱에서는 2초 동안 지속
                 setTimeout(() => {
                     if (gameOver || selectedCat.finished || !selectedCat.isCatMadness) return;
                     
@@ -564,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     removeEffectIcon(selectedCat, 'cat-madness');
                     updateCatStatus(selectedCat);
                     addLog(getRandomCommentary('catMadnessCured', {name: selectedCat.name}));
-                }, 2000); // 2초 후 자동 회복
+                }, effectDuration);
             }
         }, getEventInterval());
         

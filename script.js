@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const catNamesContainer = document.getElementById('cat-names-container');
     const startRaceBtn = document.getElementById('start-race');
     const newRaceBtn = document.getElementById('new-race');
+    const closeResultsBtn = document.getElementById('close-results');
     const timerElement = document.getElementById('timer');
     const raceRankingElement = document.getElementById('race-ranking');
     const collapsibleBtn = document.querySelector('.collapsible-btn');
@@ -118,6 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 새 게임 버튼 클릭
     newRaceBtn.addEventListener('click', resetGame);
+
+    // 닫기 버튼 클릭
+    closeResultsBtn.addEventListener('click', function() {
+        resultsModal.classList.add('hidden');
+    });
 
     // 고양이 이름 입력 필드 업데이트 함수
     function updateCatNameInputs() {
@@ -265,7 +271,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const catIcon = document.createElement('div');
             catIcon.className = 'cat-icon';
-            catIcon.textContent = '🐱';
+            const catImg = document.createElement('img');
+            catImg.src = 'images/cats/cat-normal.png';
+            catImg.alt = '고양이';
+            catImg.className = 'cat-img';
+            catIcon.appendChild(catImg);
             
             const catName = document.createElement('div');
             catName.className = 'cat-name';
@@ -354,6 +364,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         cat.statusElement.textContent = statusText;
         cat.statusElement.className = `cat-status ${statusClass}`;
+        
+        // 상태에 따른 이미지 변경
+        updateCatImage(cat);
+    }
+
+    // 고양이 상태에 따라 이미지 변경 함수
+    function updateCatImage(cat) {
+        const catImg = cat.element.querySelector('.cat-img');
+        
+        if (cat.isExhausted) {
+            catImg.src = 'images/cats/cat-exhausted.png';
+        } else if (cat.isLightningHit) {
+            catImg.src = 'images/cats/cat-stunned.png';
+        } else if (cat.isCatMadness) {
+            catImg.src = 'images/cats/cat-madness.png';
+        } else if (cat.isRainbowBoost) {
+            catImg.src = 'images/cats/cat-boosted.png';
+        } else {
+            catImg.src = 'images/cats/cat-normal.png';
+        }
     }
 
     // 이펙트 아이콘 추가 함수
@@ -365,21 +395,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const icon = document.createElement('div');
         icon.className = `effect-icon ${effect}-icon`;
         
+        // 이모지 대신 이미지 사용
+        const iconImg = document.createElement('img');
+        
         switch(effect) {
             case 'exhausted':
-                icon.textContent = '😫';
+                iconImg.src = 'images/icons/exhausted.png';
                 break;
             case 'cat-madness':
-                icon.textContent = '😾';
+                iconImg.src = 'images/icons/madness.png';
                 break;
             case 'lightning-hit':
-                icon.textContent = '⚡';
+                iconImg.src = 'images/icons/lightning.png';
                 break;
             case 'rainbow-boost':
-                icon.textContent = '🌈';
+                iconImg.src = 'images/icons/rainbow.png';
                 break;
         }
         
+        iconImg.alt = effect;
+        iconImg.className = 'effect-img';
+        icon.appendChild(iconImg);
         cat.effectIcons.appendChild(icon);
     }
     
@@ -754,7 +790,21 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsList.appendChild(resultEntry);
         });
         
-        // 결승선에 도달하지 못한 고양이는 없음 (모두 결승선 통과 후 게임 종료)
+        // 결승선에 도달하지 못한 고양이 표시 (옵션)
+        const unfinishedCats = cats.filter(cat => !cat.finished);
+        if (unfinishedCats.length > 0) {
+            const unfinishedHeader = document.createElement('p');
+            unfinishedHeader.textContent = '완주하지 못한 고양이:';
+            unfinishedHeader.style.marginTop = '15px';
+            resultsList.appendChild(unfinishedHeader);
+            
+            unfinishedCats.forEach(cat => {
+                const unfinishedEntry = document.createElement('p');
+                unfinishedEntry.textContent = `${cat.name}`;
+                resultsList.appendChild(unfinishedEntry);
+            });
+        }
+        
         resultsModal.classList.remove('hidden');
     }
 

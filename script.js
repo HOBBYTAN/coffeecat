@@ -371,8 +371,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // 체력 감소 - 2배 빠르게 (0.2 → 0.4)
-        cat.energy -= 0.4;
+        // 체력 감소 - 더 빠르게 (0.4 → 0.8)
+        cat.energy -= 0.8;
         cat.energyBar.style.width = `${cat.energy}%`;
         
         // 체력 소진 시
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateCatStatus(cat);
                 addLog(getRandomCommentary('exhausted', {name: cat.name}));
                 
-                // 2초 후 체력 회복
+                // 1.5초 후 체력 회복 (더 빠르게)
                 setTimeout(() => {
                     if (gameOver) return;
                     cat.energy = 100;
@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     removeEffectIcon(cat, 'exhausted');
                     updateCatStatus(cat);
                     addLog(getRandomCommentary('recovered', {name: cat.name}));
-                }, 2000);
+                }, 1500);
             } else {
                 cat.isExhausted = true;
                 cat.element.classList.add('exhausted');
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateCatStatus(cat);
                 addLog(getRandomCommentary('exhausted', {name: cat.name}));
                 
-                // 2초 후 체력 회복
+                // 1.5초 후 체력 회복 (더 빠르게)
                 setTimeout(() => {
                     if (gameOver) return;
                     cat.energy = 100;
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     removeEffectIcon(cat, 'exhausted');
                     updateCatStatus(cat);
                     addLog(getRandomCommentary('recovered', {name: cat.name}));
-                }, 2000);
+                }, 1500);
             }
             return;
         }
@@ -471,12 +471,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 이벤트 타이머 시작
     function startEventTimers() {
-        // 광묘병 발생 (2~5초마다)
+        // 동적 이벤트 간격 (고양이가 완주할수록 짧아짐)
+        function getEventInterval() {
+            // 완주한 고양이 수에 따라 간격 감소 (최소 1초, 최대 5초)
+            const baseInterval = Math.max(1000, 5000 - (finishedCats.length * 500));
+            return baseInterval + Math.random() * 2000;
+        }
+        
+        // 이벤트 타이머 재설정 함수
+        function resetEventTimers() {
+            clearEventTimers();
+            startEventTimers();
+        }
+        
+        // 광묘병 발생 (동적 간격)
         eventTimers.catMadness = setInterval(() => {
             if (gameOver || !gameStarted) return;
             
+            // 이벤트를 적용할 수 있는 고양이 필터링 (이미 효과 적용 중인 고양이 제외)
             const availableCats = cats.filter(cat => 
-                !cat.finished && !cat.isCatMadness && !cat.isExhausted && !cat.isLightningHit
+                !cat.finished && 
+                !cat.isCatMadness && 
+                !cat.isExhausted && 
+                !cat.isLightningHit // 기절 상태인 경우 광묘병 적용 안됨
             );
             
             if (availableCats.length > 0) {
@@ -524,14 +541,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     addLog(getRandomCommentary('catMadnessCured', {name: selectedCat.name}));
                 }, 2000); // 2초 후 자동 회복
             }
-        }, 2000 + Math.random() * 3000); // 2~5초 간격
+        }, getEventInterval());
         
-        // 번개 발생 (2~5초마다)
+        // 번개 발생 (동적 간격)
         eventTimers.lightning = setInterval(() => {
             if (gameOver || !gameStarted) return;
             
+            // 이벤트를 적용할 수 있는 고양이 필터링 (이미 효과 적용 중인 고양이 제외)
             const availableCats = cats.filter(cat => 
-                !cat.finished && !cat.isLightningHit && !cat.isExhausted && !cat.isCatMadness
+                !cat.finished && 
+                !cat.isLightningHit &&
+                !cat.isCatMadness // 광묘병 상태인 경우 번개 적용 안됨
             );
             
             if (availableCats.length > 0) {
@@ -592,82 +612,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     addLog(getRandomCommentary('lightningRecovered', {name: selectedCat.name}));
                 }, 3000);
             }
-        }, 2000 + Math.random() * 3000); // 2~5초 간격
+        }, getEventInterval());
         
-        // 무지개 발생 (2~5초마다)
+        // 무지개 발생 (동적 간격)
         eventTimers.rainbow = setInterval(() => {
             if (gameOver || !gameStarted) return;
             
+            // 무지개는 모든 상태에 중첩 가능 (이미 무지개 효과가 적용된 고양이는 제외)
             const availableCats = cats.filter(cat => 
-                !cat.finished && !cat.isExhausted && !cat.isLightningHit && !cat.isCatMadness
+                !cat.finished && 
+                !cat.isRainbowBoost
             );
             
             if (availableCats.length > 0) {
-                // 각 고양이의 위치를 기준으로 정렬하여 1등 고양이 찾기
-                const sortedCats = [...availableCats].sort((a, b) => b.position - a.position);
-                const leadingCat = sortedCats[0];
+                const randomCat = availableCats[Math.floor(Math.random() * availableCats.length)];
                 
-                // 1등 고양이가 걸릴 확률 20% 증가
-                const cats = availableCats.map(cat => {
-                    // 1등 고양이의 가중치는 1.2, 나머지는 1
-                    return {
-                        cat: cat,
-                        weight: (cat === leadingCat) ? 1.2 : 1
-                    };
-                });
+                // 무지개 부스트 적용
+                randomCat.isRainbowBoost = true;
+                randomCat.element.classList.add('rainbow-boost');
+                addEffectIcon(randomCat, 'rainbow-boost');
+                updateCatStatus(randomCat);
+                addLog(getRandomCommentary('rainbow', {name: randomCat.name}));
                 
-                // 가중치 기반 랜덤 선택
-                const totalWeight = cats.reduce((sum, item) => sum + item.weight, 0);
-                let random = Math.random() * totalWeight;
-                
-                let selectedCat;
-                for (const item of cats) {
-                    random -= item.weight;
-                    if (random <= 0) {
-                        selectedCat = item.cat;
-                        break;
-                    }
-                }
-                
-                // 무지개 이펙트 생성
-                const rainbow = document.createElement('div');
-                rainbow.className = 'rainbow';
-                rainbow.style.left = `${selectedCat.position + 50}px`;
-                rainbow.style.top = `${selectedCat.top + 15}px`;
-                raceTrack.appendChild(rainbow);
-                
-                // 1초 후 고양이가 무지개에 도달
+                // 2초 후 무지개 부스트 효과 종료 (더 오래 지속)
                 setTimeout(() => {
-                    if (gameOver || selectedCat.finished || selectedCat.isExhausted || selectedCat.isLightningHit || selectedCat.isCatMadness) {
-                        if (rainbow.parentNode === raceTrack) {
-                            raceTrack.removeChild(rainbow);
-                        }
-                        return;
-                    }
-                    
-                    // 무지개 효과 적용
-                    selectedCat.isRainbowBoost = true;
-                    selectedCat.element.classList.add('rainbow-boost');
-                    addEffectIcon(selectedCat, 'rainbow-boost');
-                    updateCatStatus(selectedCat);
-                    addLog(getRandomCommentary('rainbow', {name: selectedCat.name}));
-                    
-                    // 무지개 이펙트 제거
-                    if (rainbow.parentNode === raceTrack) {
-                        raceTrack.removeChild(rainbow);
-                    }
-                    
-                    // 1초 후 무지개 효과 해제
-                    setTimeout(() => {
-                        if (gameOver) return;
-                        selectedCat.isRainbowBoost = false;
-                        selectedCat.element.classList.remove('rainbow-boost');
-                        removeEffectIcon(selectedCat, 'rainbow-boost');
-                        updateCatStatus(selectedCat);
-                    }, 1000);
-                }, 1000);
+                    if (gameOver) return;
+                    randomCat.isRainbowBoost = false;
+                    randomCat.element.classList.remove('rainbow-boost');
+                    removeEffectIcon(randomCat, 'rainbow-boost');
+                    updateCatStatus(randomCat);
+                }, 2000);
             }
-        }, 2000 + Math.random() * 3000); // 2~5초 간격
+        }, getEventInterval());
+        
+        // 완주한 고양이가 생길 때마다 이벤트 간격 재설정
+        const originalUpdateCat = updateCat;
+        updateCat = function(cat) {
+            const wasFinished = cat.finished;
+            originalUpdateCat(cat);
+            // 고양이가 새로 완주했을 때 이벤트 간격 재설정
+            if (!wasFinished && cat.finished) {
+                resetEventTimers();
+            }
+        };
     }
 
     // 로그 추가 함수

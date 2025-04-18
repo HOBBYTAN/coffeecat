@@ -79,13 +79,14 @@
     <div id="setup-modal" class="modal">
         <div class="modal-content">
             <h2>🐱 고양이 경주 설정 🐱</h2>
-            <p class="setup-info">고양이들이 달리면서 다음과 같은 이벤트가 발생합니다(이벤트는 2~5초 간격으로 발생):</p>
+            <p class="setup-info">고양이들이 달리면서 다음과 같은 이벤트가 발생합니다(이벤트는 동적 간격으로 발생, 결승선 통과 고양이가 많을수록 더 자주 발생):</p>
             <ul class="event-list">
-                <li><span class="icon">😫</span> 체력 소진: 체력이 떨어져 2초간 멈춥니다.</li>
+                <li><span class="icon">😫</span> 체력 소진: 체력이 떨어져 1.5초간 멈춥니다.</li>
                 <li><span class="icon">😾</span> 광묘병: 체력이 소진되거나 2초가 지날 때까지 뒤로 달립니다.</li>
                 <li><span class="icon">⚡</span> 번개: 3초간 멈춥니다.</li>
-                <li><span class="icon">🌈</span> 무지개: 1초간 속도가 2배 증가합니다.</li>
+                <li><span class="icon">🌈</span> 무지개: 2초간 속도가 2배 증가합니다.</li>
             </ul>
+            <p class="setup-info">* 기절 상태에서는 광묘병에 걸리지 않고, 광묘병 상태에서는 번개에 맞지 않습니다.</p>
             <div class="form-group">
                 <label for="cat-count">경주할 고양이 수:</label>
                 <input type="number" id="cat-count" min="2" max="8" value="4">

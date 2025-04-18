@@ -240,8 +240,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const name = nameInput ? nameInput.value : `냥이${i}`;
             
             // 초기 속도: 모바일에서는 더 느리게 설정
-            const baseSpeed = isMobile ? 0.5 : 1;
-            const randomSpeed = baseSpeed + Math.random() * (isMobile ? 0.3 : 0.5);
+            const baseSpeed = isMobile ? 0.65 : 1;  // 모바일에서 30% 빠르게 (0.5에서 0.65로 조정)
+            const randomSpeed = baseSpeed + Math.random() * (isMobile ? 0.4 : 0.5);  // 랜덤성도 조금 증가
             
             // 고양이 객체 생성
             const cat = {
@@ -498,8 +498,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 디바이스에 따른 속도 조정
         if (isMobile) {
-            // 모바일에서는 트랙 크기에 비례하게 속도 줄임
-            const speedScale = Math.min(1, trackWidth / 1000);
+            // 모바일에서는 트랙 크기에 비례하게 속도 조정 (30% 빠르게)
+            const speedScale = Math.min(1, trackWidth / 1000) * 1.3;
             moveSpeed *= speedScale;
         }
         

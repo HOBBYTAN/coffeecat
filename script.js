@@ -12,6 +12,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const newRaceBtn = document.getElementById('new-race');
     const timerElement = document.getElementById('timer');
     const raceRankingElement = document.getElementById('race-ranking');
+    const collapsibleBtn = document.querySelector('.collapsible-btn');
+
+    // 접기/펼치기 기능 설정
+    if (collapsibleBtn) {
+        // 모바일 환경에서는 기본적으로 접혀있도록 설정
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) {
+            // 데스크톱에서는 기본적으로 펼쳐있도록 설정
+            collapsibleBtn.classList.add('collapsible-active');
+            const content = collapsibleBtn.nextElementSibling;
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
+
+        // 접기/펼치기 버튼 클릭 이벤트
+        collapsibleBtn.addEventListener('click', function() {
+            this.classList.toggle('collapsible-active');
+            const content = this.nextElementSibling;
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    }
 
     // 게임 상태
     let cats = [];

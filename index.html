@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="회사 내 직원들과 커피 내기를 하기 위한 재미있는 고양이 경주 게임입니다.">
+    <meta name="keywords" content="고양이, 경주, 게임, 커피, 내기, 직원, 회사">
+    <title>🏆 커피내기 고양이 경주 게임 🐱</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+    <!-- 구글 애드센스 코드 -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9718900378933623"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="ad-container ad-left">
+            <!-- 왼쪽 광고 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-9718900378933623"
+                 data-ad-slot="1306329881"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <div id="game-container">
+            <h1 class="game-title">🐱 고양이 경주 게임 🐱</h1>
+            <p class="game-description">모든 고양이가 결승선을 통과해야 게임이 종료됩니다. 다양한 이벤트가 발생하니 주의하세요!</p>
+            <div id="race-track">
+                <div id="timer">시간: 0초</div>
+                <div id="race-ranking"></div>
+                <div id="finish-line"></div>
+            </div>
+            <div id="log-container">
+                <h3>🏁 경주 중계</h3>
+                <div id="race-log"></div>
+            </div>
+            
+            <footer class="footer">
+                <p>Powered by HOBBYTAN</p>
+                <div class="footer-links">
+                    <a href="https://aijossi.tistory.com" target="_blank">블로그</a> | 
+                    <a href="https://hobbytan.com" target="_blank">홈페이지</a>
+                </div>
+            </footer>
+        </div>
+        
+        <div class="ad-container ad-right">
+            <!-- 오른쪽 광고 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <!-- 모바일용 하단 광고 -->
+        <div class="ad-container ad-bottom">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+
+    <div id="setup-modal" class="modal">
+        <div class="modal-content">
+            <h2>🐱 고양이 경주 설정 🐱</h2>
+            <p class="setup-info">고양이들이 달리면서 다음과 같은 이벤트가 발생합니다(이벤트는 2~5초 간격으로 발생):</p>
+            <ul class="event-list">
+                <li><span class="icon">😫</span> 체력 소진: 체력이 떨어져 2초간 멈춥니다.</li>
+                <li><span class="icon">😾</span> 광묘병: 체력이 소진되거나 2초가 지날 때까지 뒤로 달립니다.</li>
+                <li><span class="icon">⚡</span> 번개: 3초간 멈춥니다.</li>
+                <li><span class="icon">🌈</span> 무지개: 1초간 속도가 2배 증가합니다.</li>
+            </ul>
+            <div class="form-group">
+                <label for="cat-count">경주할 고양이 수:</label>
+                <input type="number" id="cat-count" min="2" max="8" value="4">
+            </div>
+            
+            <div id="cat-names-container">
+                <div class="form-group">
+                    <label for="cat-name-1">고양이 1 이름:</label>
+                    <input type="text" id="cat-name-1" value="냥이1">
+                </div>
+                <div class="form-group">
+                    <label for="cat-name-2">고양이 2 이름:</label>
+                    <input type="text" id="cat-name-2" value="냥이2">
+                </div>
+                <div class="form-group">
+                    <label for="cat-name-3">고양이 3 이름:</label>
+                    <input type="text" id="cat-name-3" value="냥이3">
+                </div>
+                <div class="form-group">
+                    <label for="cat-name-4">고양이 4 이름:</label>
+                    <input type="text" id="cat-name-4" value="냥이4">
+                </div>
+            </div>
+            
+            <button id="start-race">경주 시작!</button>
+        </div>
+    </div>
+
+    <div id="results-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🏆 경주 결과 🏆</h2>
+            <div id="results-list"></div>
+            <button id="new-race">새 경주 시작</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
